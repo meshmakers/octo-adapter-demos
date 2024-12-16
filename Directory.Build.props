@@ -1,0 +1,34 @@
+<Project>
+    <PropertyGroup>
+        <OctoRootDirectoryPropsFilePath>$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))</OctoRootDirectoryPropsFilePath>
+        <OctoUserPropsFilePath>$([MSBuild]::GetPathOfFileAbove('Octo.User.props', '$(MSBuildThisFileDirectory)'))</OctoUserPropsFilePath>
+        <OctoRepoRootPath>$(MSBuildThisFileDirectory)</OctoRepoRootPath>
+        <OctoRepoRootPath Condition="'$(OctoRootDirectoryPropsFilePath)'!=''">$([System.IO.Path]::GetDirectoryName($(OctoRootDirectoryPropsFilePath)))</OctoRepoRootPath>
+    </PropertyGroup>
+    <!-- Import an custom file to overwrite versions etc. -->
+    <Import Condition="'$(OctoRootDirectoryPropsFilePath)'=='' And Exists($(OctoUserPropsFilePath))" Project="$(OctoUserPropsFilePath)"/>
+    <!-- Import the Directory.Build.props file of the root directory -->
+    <Import Condition="Exists($(OctoRootDirectoryPropsFilePath))" Project="$(OctoRootDirectoryPropsFilePath)"/>
+    <PropertyGroup>
+        <Authors>meshmakers GmbH and Contributors</Authors>
+        <Company>meshmakers GmbH and Contributors</Company>
+        <Copyright>(c) 2022-2024 meshmakers GmbH</Copyright>
+        <LangVersion>latestmajor</LangVersion>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <ImplicitUsings>true</ImplicitUsings>
+        <RepositoryUrl>https://github.com/meshmakers/octo-plug-demo</RepositoryUrl>
+        <PackageIcon>meshmakers64.png</PackageIcon>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://www.meshmakers.io</PackageProjectUrl>
+        <PackageTags>Octo data mesh iot</PackageTags>
+        <TargetFramework>net8.0</TargetFramework>
+        <UserSecretsId>04bcde24-0d21-4346-8459-3bca58abec33</UserSecretsId>
+        <OctoVersion Condition="'$(Configuration)'=='DebugL'">999.0.0</OctoVersion>
+        <OctoVersion Condition="'$(OctoNugetPrivateServer)'!='' And '$(OctoVersion)'==''">0.1.*</OctoVersion>
+        <OctoVersion Condition="'$(OctoNugetPrivateServer)'=='' And '$(OctoVersion)'==''">3.1.*</OctoVersion>
+        <Version Condition="'$(Configuration)'=='DebugL'">999.0.0</Version>
+        <RestoreSources Condition="'$(OctoNugetPrivateServer)'!=''">$(OctoNugetPrivateServer)</RestoreSources>
+        <RestoreSources Condition="'$(Configuration)'=='DebugL'">$(RestoreSources);$(OctoRepoRootPath)../nuget</RestoreSources>
+    </PropertyGroup>
+</Project>

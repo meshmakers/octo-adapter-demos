@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>Meshmakers.Octo.Communication.Plugs.Demo</AssemblyName>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <RepositoryUrl>https://github.com/meshmakers/octomesh</RepositoryUrl>
+        <RootNamespace>Meshmakers.Octo.Communication.Plugs.Demo</RootNamespace>
+        <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+        <NoWarn>1701;1702;CS8002</NoWarn>
+        <Configurations>Debug;Release;DebugL</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Meshmakers.Octo.Sdk.Common" Version="$(OctoVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+      <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
+    </ItemGroup>
+
+</Project>

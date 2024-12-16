@@ -1,0 +1,66 @@
+name: $(MajorVersion).$(MinorVersion).$(date:yyMM).$(DayOfMonth)$(rev:rrr)-$(Build.SourceBranchName)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - dev/*
+      - main
+  tags:
+    exclude:
+      - '*'
+
+variables:
+  - group: ApiKeys
+  - name: solutionFile
+    value: 'Octo.Plug.Demo.sln'
+  - name: isRelease
+    value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/r') }}
+  - name: MajorVersion
+    value: '0'
+  - name: MinorVersion
+    value: '1'    
+  
+stages:
+ - stage: Build
+   jobs:
+     - job: local_build
+       displayName: "Build nuget and execute tests"
+       pool:
+         name: Gerald-Local-Linux
+       steps:
+         - template: update-build-number.yml
+         - checkout: self
+           clean: true
+           submodules: true
+         - template: set-version.yml
+         - template: download-ca.yml
+         - task: DotNetCoreCLI@2
+           displayName: 'Test'
+           inputs:
+             command: 'test'
+             projects: |
+               '**/*Tests.csproj'
+               !'**/*SystemTests.csproj'
+             testRunTitle: 'CI'
+         - template: build-and-push-docker-image.yml
+           parameters:
+             ContainerRegistry: 'dockerhub@ianitor'
+             Repository: meshmakers/octo-communication-plug-demo
+             Dockerfile: src/Communication.Plugs.Demo/Dockerfile
+             IsRelease: ${{ variables.isRelease }}
+             Architecture: 'linux/arm64,linux/amd64'
+             PrivateRegistry: $(DockerRegistryPrivateUri)
+         - task: PowerShell@2
+           displayName: 'Create versioninfo file'
+           inputs:
+             targetType: 'inline'
+             script: |
+               New-Item $(build.artifactstagingdirectory)/versioninfo.txt
+               Set-Content $(build.artifactstagingdirectory)/versioninfo.txt $(Build.BuildNumber)
+         - task: PublishBuildArtifacts@1
+           displayName: 'Publish Artifact: local'
+           inputs:
+             ArtifactName: local
+     
+

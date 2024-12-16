@@ -1,0 +1,11 @@
+$schema: https://schemas.meshmakers.cloud/runtime-model.schema.json
+dependencies:
+  - System.Communication
+entities:
+  - rtId: 6760711ec4ff02221e0b532d
+    ckTypeId: System.Communication/EdgeAdapter
+    attributes:
+      - id: System/Name
+        value: Demo Adapter       
+
+      
