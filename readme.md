@@ -29,6 +29,7 @@ The demo plug contains following components:
 
 * Set environment variables of the IDE to prepare for running the plug.
   ```bash
+  OCTO_ADAPTER__TENANTID=meshtest
   OCTO_ADAPTER__ADAPTERRTID=6760711ec4ff02221e0b532d
   ```
   The Runtime ID is the ID of the adapter configuration created in the previous step, see the `rtid` field in the adapter configuration YAML at [./scripts/_general/rt-adapters-demo.yaml](./scripts/_general/rt-adapters-demo.yaml).
@@ -63,3 +64,5 @@ The demo plug contains following components:
     ./scripts/om_delete_tenants.ps1
     ```
 
+## Further reading
+* [Create first Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/creatingAdapter)
