@@ -14,9 +14,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Meshmakers.Octo.Sdk.Common" Version="$(OctoVersion)" />
+      <PackageReference Include="Meshmakers.Octo.Sdk.Common" Version="3.2.4" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-      <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
+      <PackageReference Include="NLog.Extensions.Logging" Version="5.3.15" />
     </ItemGroup>
 
 </Project>
