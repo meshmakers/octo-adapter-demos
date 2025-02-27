@@ -4,6 +4,7 @@ using System.Text;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Configuration;
 using Meshmakers.Octo.Sdk.Common.Services;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Meshmakers.Octo.Communication.Plugs.Demo.Nodes;
@@ -26,21 +27,21 @@ public record DemoTriggerNodeConfiguration : TriggerNodeConfiguration
 /// </summary>
 [NodeConfiguration(typeof(DemoTriggerNodeConfiguration))]
 // ReSharper disable once ClassNeverInstantiated.Global
-public class DemoTriggerNode(/* you can inject services here */)
+public class DemoTriggerNode( /* you can inject services here */)
     : ITriggerPipelineNode
 {
     private TcpListener? _tcpListener;
     private CancellationTokenSource? _cts;
 
-    
+
     public Task StartAsync(ITriggerContext context)
     {
         var c = context.NodeContext.GetNodeConfiguration<DemoTriggerNodeConfiguration>();
-        
+
         _cts = new CancellationTokenSource();
-        _tcpListener = new TcpListener(IPAddress.Any, c.Port); 
+        _tcpListener = new TcpListener(IPAddress.Any, c.Port);
         _tcpListener.Start();
-        
+
         context.NodeContext.Info("TCP listener started and waiting for connections...");
 
         Task.Run(async () =>
@@ -79,8 +80,9 @@ public class DemoTriggerNode(/* you can inject services here */)
 
         return Task.CompletedTask;
     }
-    
-    private async Task ProcessClientAsync(TcpClient client, ITriggerContext context, CancellationToken cancellationToken)
+
+    private async Task ProcessClientAsync(TcpClient client, ITriggerContext context,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -88,24 +90,34 @@ public class DemoTriggerNode(/* you can inject services here */)
             var buffer = new byte[1024];
             int bytesRead;
             var messageBuilder = new StringBuilder();
-
             while ((bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
             {
+                Console.WriteLine("Client connected.");
+
+                // Nachricht vom Client lesen
+             //   string receivedMessage = reader.ReadLine();
+              //  Console.WriteLine($"Received: {receivedMessage}");
+
                 messageBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
                 if (networkStream.DataAvailable) continue;
 
                 var message = messageBuilder.ToString();
                 context.NodeContext.Info($"Received message: {message}");
-                
+
                 try
                 {
                     var input = JToken.Parse(message);
-                    await context.ExecuteAsync(
+                    var output = await context.ExecuteAsync(
                         new ExecutePipelineOptions(DateTime.UtcNow) // adapt as needed
                         {
                             ExternalReceivedDateTime = DateTime.UtcNow // adapt as needed
                         },
                         input);
+
+                    var outputString = JsonConvert.SerializeObject(output);
+                    byte[] utf8Bytes = Encoding.UTF8.GetBytes(outputString + Environment.NewLine);
+                    await networkStream.WriteAsync(utf8Bytes, cancellationToken);
+                    await networkStream.FlushAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -125,5 +137,4 @@ public class DemoTriggerNode(/* you can inject services here */)
             client.Close();
         }
     }
-
 }
