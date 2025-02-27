@@ -42,7 +42,7 @@ The demo plug contains following components:
   ```yaml
   triggers:
     - type: DemoTrigger@1
-      port: 8001
+      port: 8000
   transformations:
     - type: Demo@1
       description: Simulates data

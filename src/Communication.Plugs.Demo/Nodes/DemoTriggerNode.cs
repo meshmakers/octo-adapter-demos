@@ -33,7 +33,7 @@ public class DemoTriggerNode(/* you can inject services here */)
     private CancellationTokenSource? _cts;
 
     
-    public async Task StartAsync(ITriggerContext context)
+    public Task StartAsync(ITriggerContext context)
     {
         var c = context.NodeContext.GetNodeConfiguration<DemoTriggerNodeConfiguration>();
         
@@ -42,20 +42,25 @@ public class DemoTriggerNode(/* you can inject services here */)
         _tcpListener.Start();
         
         context.NodeContext.Info("TCP listener started and waiting for connections...");
-        
-        while (!_cts.Token.IsCancellationRequested)
+
+        Task.Run(async () =>
         {
-            try
+            while (!_cts.Token.IsCancellationRequested)
             {
-                var tcpClient = await _tcpListener.AcceptTcpClientAsync();
-                _ = ProcessClientAsync(tcpClient, context, _cts.Token); // Execute in a separate task
+                try
+                {
+                    var tcpClient = await _tcpListener.AcceptTcpClientAsync();
+                    _ = ProcessClientAsync(tcpClient, context, _cts.Token); // Execute in a separate task
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Listener was stopped
+                    break;
+                }
             }
-            catch (ObjectDisposedException)
-            {
-                // Listener was stopped
-                break;
-            }
-        }
+        });
+
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(ITriggerContext context)
