@@ -1,4 +1,5 @@
 using Meshmakers.Octo.Common.DistributionEventHub.Services;
+using Meshmakers.Octo.Communication.Contracts.DataTransferObjects;
 using Meshmakers.Octo.Sdk.Common.Adapters;
 using Meshmakers.Octo.Sdk.Common.Services;
 using NLog;
@@ -19,28 +20,28 @@ public class DemoPlugService(
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    public async Task StartupAsync(AdapterStartup adapterStartup, CancellationToken stoppingToken)
+    public async Task<bool> StartupAsync(AdapterStartup adapterStartup, List<DeploymentUpdateErrorMessageDto> errorMessages, CancellationToken stoppingToken)
     {
         Logger.Info("Startup");
-        
-        // adapter configuration is legacy and should be removed.
-        /*
-        if (adapterStartup.Configuration.AdapterConfiguration == null) 
-        {
-            throw new Exception("No configuration received");
-        }
-        */
-        
+
         try
         {
+            if (adapterStartup.Configuration.AdapterConfiguration == null)
+            {
+                throw new Exception("No configuration received");
+            }
+
             // Register pipelines
-            await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId, adapterStartup.Configuration.Pipelines);
+            var success = await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId,
+                adapterStartup.Configuration.Pipelines, errorMessages);
             
             // Start triggers
             await pipelineRegistryService.StartTriggerPipelineNodesAsync(adapterStartup.TenantId);
             
             // Start connection to rabbitmq event hub
             await eventHubControl.StartAsync(stoppingToken);
+
+            return success;
         }
         catch (Exception e)
         {
