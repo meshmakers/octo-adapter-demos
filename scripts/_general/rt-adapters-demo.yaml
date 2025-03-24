@@ -6,6 +6,10 @@ entities:
     ckTypeId: System.Communication/EdgeAdapter
     attributes:
       - id: System/Name
-        value: Demo Adapter       
-
+        value: Demo Edge Adapter
+  - rtId: 6760711ec4ff02221e0b532e
+    ckTypeId: System.Communication/MeshAdapter
+    attributes:
+      - id: System/Name
+        value: Demo Mesh Adapter
       

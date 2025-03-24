@@ -4,7 +4,7 @@ using Meshmakers.Octo.Sdk.Common.Adapters;
 using Meshmakers.Octo.Sdk.Common.Services;
 using NLog;
 
-namespace Meshmakers.Octo.Communication.Plugs.Demo.Services;
+namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Services;
 
 /// <summary>
 ///  This is the main service for the plug. It is responsible for starting and stopping the plug.
@@ -13,7 +13,7 @@ namespace Meshmakers.Octo.Communication.Plugs.Demo.Services;
 /// </summary>
 /// <param name="pipelineRegistryService">Service for registering and starting pipelines</param>
 /// <param name="eventHubControl">Event hub control service</param>
-public class DemoPlugService(
+public class AdapterEdgeDemoService(
     IPipelineRegistryService pipelineRegistryService,
     IEventHubControl eventHubControl)
     : IAdapterService
@@ -26,16 +26,19 @@ public class DemoPlugService(
 
         try
         {
-            if (adapterStartup.Configuration.AdapterConfiguration == null)
-            {
-                throw new Exception("No configuration received");
-            }
+            // adapterStartup contains configuration:
+            // Adapter configuration (optional) and a list of pipelines to be executed by this adapter.
+            // Pipelines are a sequence of nodes that process data.
+            // The pipeline is registered with the pipeline registry service.
 
             // Register pipelines
             var success = await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId,
                 adapterStartup.Configuration.Pipelines, errorMessages);
-            
-            // Start triggers
+
+            // if success is false, at least one pipeline failed to register, and the errorMessages list contains the error messages.
+            // The adapter should start to execute the rest of the pipelines.
+
+            // Start triggers. Triggers are special nodes that start the pipeline execution based on some event.
             await pipelineRegistryService.StartTriggerPipelineNodesAsync(adapterStartup.TenantId);
             
             // Start connection to rabbitmq event hub

@@ -7,7 +7,7 @@ using Meshmakers.Octo.Sdk.Common.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Meshmakers.Octo.Communication.Plugs.Demo.Nodes;
+namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Nodes;
 
 /// <summary>
 /// Configuration for DemoTriggerNode - a trigger node starts the execution of the transformation pipeline

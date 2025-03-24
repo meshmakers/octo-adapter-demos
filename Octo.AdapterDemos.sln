@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.Plugs.Demo", "src\Communication.Plugs.Demo\Communication.Plugs.Demo.csproj", "{F48F83B0-8EA4-42E6-8CBA-9DC9C7E59A44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapterEdgeDemo", "src\AdapterEdgeDemo\AdapterEdgeDemo.csproj", "{F48F83B0-8EA4-42E6-8CBA-9DC9C7E59A44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapterMeshDemo", "src\AdapterMeshDemo\AdapterMeshDemo.csproj", "{D95F33A7-8911-4BB0-90DF-A53F307D17AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,12 @@ Global
 		{F48F83B0-8EA4-42E6-8CBA-9DC9C7E59A44}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F48F83B0-8EA4-42E6-8CBA-9DC9C7E59A44}.DebugL|Any CPU.ActiveCfg = DebugL|Any CPU
 		{F48F83B0-8EA4-42E6-8CBA-9DC9C7E59A44}.DebugL|Any CPU.Build.0 = DebugL|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.DebugL|Any CPU.ActiveCfg = DebugL|Any CPU
+		{D95F33A7-8911-4BB0-90DF-A53F307D17AE}.DebugL|Any CPU.Build.0 = DebugL|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

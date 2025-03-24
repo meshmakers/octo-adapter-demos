@@ -1,6 +1,6 @@
 using Meshmakers.Octo.Sdk.Common.Services;
 
-namespace Meshmakers.Octo.Communication.Plugs.Demo;
+namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo;
 
 public class DemoPipelineExecutionException : PipelineExecutionException
 {

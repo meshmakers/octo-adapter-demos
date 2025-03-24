@@ -2,7 +2,7 @@
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Configuration;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Nodes;
 
-namespace Meshmakers.Octo.Communication.Plugs.Demo.Nodes;
+namespace Meshmakers.Octo.Communication.MeshAdapter.Demo.Nodes;
 
 /// <summary>
 /// Configuration for DemoNode

@@ -3,10 +3,10 @@
     <PropertyGroup>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <OutputType>Exe</OutputType>
-        <AssemblyName>Meshmakers.Octo.Communication.Plugs.Demo</AssemblyName>
+        <AssemblyName>Meshmakers.Octo.Communication.EdgeAdapter.Demo</AssemblyName>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <RepositoryUrl>https://github.com/meshmakers/octomesh</RepositoryUrl>
-        <RootNamespace>Meshmakers.Octo.Communication.Plugs.Demo</RootNamespace>
+        <RootNamespace>Meshmakers.Octo.Communication.EdgeAdapter.Demo</RootNamespace>
         <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
         <NoWarn>1701;1702;CS8002</NoWarn>
         <Configurations>Debug;Release;DebugL</Configurations>
