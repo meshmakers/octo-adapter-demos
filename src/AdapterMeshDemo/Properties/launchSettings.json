@@ -4,8 +4,13 @@
     "AdapterMeshDemo": {
       "commandName": "Project",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "OCTO_ADAPTER__TENANTID": meshtest,
-        "OCTO_ADAPTER__ADAPTERRTID": 6760711ec4ff02221e0b532e
+        "OCTO_ADAPTER__ADAPTERRTID": 6760711ec4ff02221e0b532e,
+        "OCTO_ADAPTER__ADAPTERCKTYPEID": "System.Communication/MeshAdapter",
+        "SYSTEM__AdminUserPassword": "OctoAdmin1",
+        "SYSTEM__DatabaseUserPassword": "OctoUser1",
+        "SYSTEM__DirectConnection": true
       }
     }
   }

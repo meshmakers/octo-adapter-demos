@@ -9,7 +9,10 @@ namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Nodes;
 /// </summary>
 [NodeName("Demo", 1)]
 public record
-    DemoNodeConfiguration : SourceTargetPathNodeConfiguration // Alternatives are: TargetPathNodeConfiguration (defines TargetPath and options), PathNodeConfiguration (defines Path), SourceTargetPathNodeConfiguration (defines Path + TargetPath and options)
+    DemoNodeConfiguration : TargetPathNodeConfiguration // Alternatives are:
+                                                        // TargetPathNodeConfiguration (defines TargetPath and options),
+                                                        // PathNodeConfiguration (defines Path),
+                                                        // SourceTargetPathNodeConfiguration (defines Path + TargetPath and options)
 {
     /// <summary>
     /// Message that is written to output for demonstration
