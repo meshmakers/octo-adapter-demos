@@ -14,7 +14,7 @@
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <ImplicitUsings>true</ImplicitUsings>
-        <RepositoryUrl>https://github.com/meshmakers/octo-plug-demo</RepositoryUrl>
+        <RepositoryUrl>https://github.com/meshmakers/octo-adapter-demos</RepositoryUrl>
         <PackageIcon>meshmakers64.png</PackageIcon>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageProjectUrl>https://www.meshmakers.io</PackageProjectUrl>
