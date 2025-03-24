@@ -1,4 +1,5 @@
 using Meshmakers.Octo.Sdk.Common.Services;
+using Newtonsoft.Json;
 
 namespace Meshmakers.Octo.Communication.MeshAdapter.Demo;
 
@@ -21,9 +22,14 @@ public class DemoPipelineExecutionException : PipelineExecutionException
         return new DemoPipelineExecutionException("Stop failed", exception);
     }
 
-    public static Exception ProcessFailed(Exception exception)
+    public static Exception PipelineExecutionFailed(Exception exception)
     {
-        return new DemoPipelineExecutionException("Process failed", exception);
+        return new DemoPipelineExecutionException("Execution of pipeline failed", exception);
+    }
+
+    public static Exception MessageDeserializationFailed(JsonReaderException jsonReaderException)
+    {
+        return new DemoPipelineExecutionException("Message deserialization failed", jsonReaderException);
     }
 }
 

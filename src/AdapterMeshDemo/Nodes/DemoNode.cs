@@ -35,6 +35,8 @@ public class DemoNode(
         // Get configuration
         var c = nodeContext.GetNodeConfiguration<DemoNodeConfiguration>();
 
+        nodeContext.Info("DemoNode: " + c.MyMessage);
+
         // set value
         dataContext.SetValueByPath(c.TargetPath, c.DocumentMode, c.TargetValueKind, c.TargetValueWriteMode,
             c.MyMessage);

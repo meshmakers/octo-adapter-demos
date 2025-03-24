@@ -87,4 +87,6 @@ The demo adapter contains the following components:
     ```
 
 ## Further reading
-* [Create first Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/creatingAdapter)
+* [Write your first Edge Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createEdgeAdapter)
+* [Write your first Mesh Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createMeshAdapter)
+* [Write your first Trigger Node](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createTriggerNode)

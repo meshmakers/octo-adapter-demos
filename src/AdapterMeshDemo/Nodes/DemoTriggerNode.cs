@@ -17,18 +17,17 @@ namespace Meshmakers.Octo.Communication.MeshAdapter.Demo.Nodes;
 public record DemoTriggerNodeConfiguration : TriggerNodeConfiguration
 {
     /// <summary>
-    /// Port the sample TCP listener listens on
+    /// Port the sample TCP listener listens to
     /// </summary>
     public required ushort Port { get; set; } = 8000;
 }
 
 /// <summary>
-/// Implements 
+/// Implements a trigger node that listens to a TCP port and processes incoming messages
 /// </summary>
 [NodeConfiguration(typeof(DemoTriggerNodeConfiguration))]
 // ReSharper disable once ClassNeverInstantiated.Global
-public class DemoTriggerNode( /* you can inject services here */)
-    : ITriggerPipelineNode
+public class DemoTriggerNode( /* you can inject services here */) : ITriggerPipelineNode
 {
     private TcpListener? _tcpListener;
     private CancellationTokenSource? _cts;
@@ -38,6 +37,7 @@ public class DemoTriggerNode( /* you can inject services here */)
     {
         var c = context.NodeContext.GetNodeConfiguration<DemoTriggerNodeConfiguration>();
 
+        // Listen to TCP port for incoming messages at all interfaces
         _cts = new CancellationTokenSource();
         _tcpListener = new TcpListener(IPAddress.Any, c.Port);
         _tcpListener.Start();
@@ -46,6 +46,7 @@ public class DemoTriggerNode( /* you can inject services here */)
 
         Task.Run(async () =>
         {
+            // Wait for incoming connections
             while (!_cts.Token.IsCancellationRequested)
             {
                 try
@@ -55,7 +56,7 @@ public class DemoTriggerNode( /* you can inject services here */)
                 }
                 catch (ObjectDisposedException)
                 {
-                    // Listener was stopped
+                    // The Listener was stopped
                     break;
                 }
             }
@@ -86,51 +87,52 @@ public class DemoTriggerNode( /* you can inject services here */)
     {
         try
         {
+            // Read incoming messages from the client
             await using var networkStream = client.GetStream();
             var buffer = new byte[1024];
             int bytesRead;
             var messageBuilder = new StringBuilder();
             while ((bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
             {
-                Console.WriteLine("Client connected.");
+                context.NodeContext.Info("Client connected.");
 
-                // Nachricht vom Client lesen
-             //   string receivedMessage = reader.ReadLine();
-              //  Console.WriteLine($"Received: {receivedMessage}");
-
+                // Process the incoming message
                 messageBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                if (networkStream.DataAvailable) continue;
+                if (networkStream.DataAvailable)
+                {
+                    continue;
+                }
 
                 var message = messageBuilder.ToString();
                 context.NodeContext.Info($"Received message: {message}");
 
-                try
-                {
-                    var input = JToken.Parse(message);
-                    var output = await context.ExecuteAsync(
-                        new ExecutePipelineOptions(DateTime.UtcNow) // adapt as needed
-                        {
-                            ExternalReceivedDateTime = DateTime.UtcNow // adapt as needed
-                        },
-                        input);
+                // Parse the incoming message as JSON and start the pipeline execution with the message as input
+                var input = JToken.Parse(message);
+                var output = await context.ExecuteAsync(
+                    new ExecutePipelineOptions(DateTime.UtcNow)
+                    {
+                        ExternalReceivedDateTime = DateTime.UtcNow
+                    },
+                    input);
 
-                    var outputString = JsonConvert.SerializeObject(output);
-                    byte[] utf8Bytes = Encoding.UTF8.GetBytes(outputString + Environment.NewLine);
-                    await networkStream.WriteAsync(utf8Bytes, cancellationToken);
-                    await networkStream.FlushAsync(cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    context.NodeContext.Error($"Error processing message: {ex.Message}");
-                    throw DemoPipelineExecutionException.ProcessFailed(ex);
-                }
+                // Serialize the output as JSON and send it back to the client
+                var outputString = JsonConvert.SerializeObject(output);
+                byte[] utf8Bytes = Encoding.UTF8.GetBytes(outputString + Environment.NewLine);
+                await networkStream.WriteAsync(utf8Bytes, cancellationToken);
+                await networkStream.FlushAsync(cancellationToken);
 
                 messageBuilder.Clear();
             }
         }
+        catch (JsonReaderException ex)
+        {
+            context.NodeContext.Error($"Error parsing input: {ex.Message}");
+            throw DemoPipelineExecutionException.MessageDeserializationFailed(ex);
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler bei der Client-Verarbeitung: {ex.Message}");
+            context.NodeContext.Error($"Error processing message: {ex.Message}");
+            throw DemoPipelineExecutionException.PipelineExecutionFailed(ex);
         }
         finally
         {
