@@ -14,7 +14,7 @@ variables:
   - group: ApiKeys
   - group: OctoDefault
   - name: solutionFile
-    value: 'Octo.Plug.Demo.sln'
+    value: 'Octo.AdapterDemos.sln'
   - name: artifactsFrameworkVersion
     value: 'net9.0'
   - name: buildConfiguration
@@ -50,10 +50,17 @@ stages:
          - template: build-and-push-docker-image.yml
            parameters:
              ContainerRegistry: $(DockerRegistryPublicConnection)
-             Repository: meshmakers/octo-communication-plug-demo
-             Dockerfile: src/Communication.Plugs.Demo/Dockerfile
+             Repository: meshmakers/octo-communication-edge-adapter-demo
+             Dockerfile: src/AdapterEdgeDemo/Dockerfile
              Architecture: 'linux/arm64,linux/amd64'
              PrivateRegistry: $(DockerRegistryPrivateUri)
+         - template: build-and-push-docker-image.yml
+           parameters:
+             ContainerRegistry: $(DockerRegistryPublicConnection)
+             Repository: meshmakers/octo-communication-mesh-adapter-demo
+             Dockerfile: src/AdapterMeshDemo/Dockerfile
+             Architecture: 'linux/arm64,linux/amd64'
+             PrivateRegistry: $(DockerRegistryPrivateUri)             
          - template: handle-artifacts.yml
 
      

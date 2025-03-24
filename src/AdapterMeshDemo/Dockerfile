@@ -10,16 +10,16 @@ RUN chmod 644 /usr/local/share/ca-certificates/nugetca.crt && update-ca-certific
 
 WORKDIR /src
 COPY ["Directory.Build.props", ""]
-COPY ["src/AdapterEdgeDemo/AdapterEdgeDemo.csproj", "src/AdapterEdgeDemo/"]
-RUN dotnet restore "src/AdapterEdgeDemo/AdapterEdgeDemo.csproj"
+COPY ["src/AdapterMeshDemo/AdapterMeshDemo.csproj", "src/AdapterMeshDemo/"]
+RUN dotnet restore "src/AdapterMeshDemo/AdapterMeshDemo.csproj"
 COPY . .
-WORKDIR "/src/src/AdapterEdgeDemo"
-RUN dotnet build "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/build
+WORKDIR "/src/src/AdapterMeshDemo"
+RUN dotnet build "AdapterMeshDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "AdapterMeshDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Meshmakers.Octo.Communication.EdgeAdapter.Demo.dll"]
+ENTRYPOINT ["dotnet", "Meshmakers.Octo.Communication.MeshAdapter.Demo.dll"]
