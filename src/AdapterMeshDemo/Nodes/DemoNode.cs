@@ -37,10 +37,19 @@ public class DemoNode(
 
         nodeContext.Info("DemoNode: " + c.MyMessage);
 
+        var data = dataContext.Current;
+        var out1 = data?.Value<string>("out");
+        var out2 = c.MyMessage;
+        if (out1 != null)
+        {
+            out2 = out1 + " " + out2;
+        }
+        
         // set value
         dataContext.SetValueByPath(c.TargetPath, c.DocumentMode, c.TargetValueKind, c.TargetValueWriteMode,
-            c.MyMessage);
+            out2);
 
+        await Task.Delay(1000);
         // Continue with next node in pipeline
         await next(dataContext, nodeContext);
     }

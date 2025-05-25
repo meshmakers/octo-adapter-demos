@@ -2,6 +2,7 @@
 using Meshmakers.Octo.Communication.MeshAdapter.Demo.Services;
 using Meshmakers.Octo.Runtime.Contracts.MongoDb.Configuration;
 using Meshmakers.Octo.Sdk.Common.Adapters;
+using Meshmakers.Octo.Sdk.Common.Services;
 using Meshmakers.Octo.Sdk.Common.Web.Sockets;
 using Meshmakers.Octo.Sdk.MeshAdapter.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,8 @@ await adapterBuilder.RunAsync(args, builder =>
     builder.Services.Configure<MeshAdapterConfiguration>(options =>
         builder.Configuration.GetSection("Adapter").Bind(options));
 
+    builder.Services.AddSingleton<IPollingService, PollingService>();
+    
     // Add services to the container.
 
     // Add the adapter service to startup and shutdown the adapter

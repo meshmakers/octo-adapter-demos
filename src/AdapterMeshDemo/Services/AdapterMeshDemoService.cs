@@ -3,6 +3,7 @@ using Meshmakers.Octo.Communication.Contracts.DataTransferObjects;
 using Meshmakers.Octo.Sdk.Common.Adapters;
 using Meshmakers.Octo.Sdk.Common.Services;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Meshmakers.Octo.Communication.MeshAdapter.Demo.Services;
 
@@ -17,11 +18,21 @@ internal class AdapterMeshDemoService(
         logger.LogInformation("Startup of mesh adapter");
         try
         {
-            var success =await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId,
+            var success = await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId,
                 adapterStartup.Configuration.Pipelines, errorMessages);
             await pipelineRegistryService.StartTriggerPipelineNodesAsync(adapterStartup.TenantId);
 
             await eventHubControl.StartAsync(stoppingToken);
+
+            var conf = adapterStartup.Configuration;
+            conf.Pipelines.Where(p =>
+            {
+                logger.LogInformation("Pipeline {NodeConfiguration} registered", p.NodeConfiguration);
+                return false;
+            });
+
+            var adapterConf = conf.AdapterConfiguration;
+            logger.LogInformation("Adapter configuration: {AdapterConfiguration}", adapterConf);
             
             return success;
         }
