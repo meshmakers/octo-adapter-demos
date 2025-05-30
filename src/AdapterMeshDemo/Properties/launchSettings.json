@@ -5,8 +5,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OCTO_ADAPTER__TENANTID": meshtest,
-        "OCTO_ADAPTER__ADAPTERRTID": 682dc3c0f15c46eb77a5e305,
+        "OCTO_ADAPTER__TENANTID": mro-test,
+        "OCTO_ADAPTER__ADAPTERRTID": 68370568dc72c131138648ea,
         "OCTO_ADAPTER__ADAPTERCKTYPEID": "System.Communication/MeshAdapter",
         "OCTO_SYSTEM__AdminUserPassword": "OctoAdmin1",
         "OCTO_SYSTEM__DatabaseUserPassword": "OctoUser1",
