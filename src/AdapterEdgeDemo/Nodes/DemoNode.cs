@@ -1,6 +1,7 @@
 ﻿using Meshmakers.Octo.Sdk.Common.EtlDataPipeline;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Configuration;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Nodes;
+using Newtonsoft.Json.Linq;
 
 namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Nodes;
 
@@ -9,7 +10,7 @@ namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Nodes;
 /// </summary>
 [NodeName("Demo", 1)]
 public record
-    DemoNodeConfiguration : TargetPathNodeConfiguration // Alternatives are:
+    DemoNodeConfiguration : SourceTargetPathNodeConfiguration // Alternatives are:
                                                         // TargetPathNodeConfiguration (defines TargetPath and options),
                                                         // PathNodeConfiguration (defines Path),
                                                         // SourceTargetPathNodeConfiguration (defines Path + TargetPath and options)
@@ -36,10 +37,16 @@ public class DemoNode(
         var c = nodeContext.GetNodeConfiguration<DemoNodeConfiguration>();
 
         nodeContext.Info("DemoNode: " + c.MyMessage);
+        
+        var pathData = dataContext.Current?.SelectToken(c.Path) as JValue;
+        var input = pathData?.Value<string>();
+        
+        var output = c.MyMessage + input;
 
+        
         // set value
         dataContext.SetValueByPath(c.TargetPath, c.DocumentMode, c.TargetValueKind, c.TargetValueWriteMode,
-            c.MyMessage);
+            output);
 
         // Continue with next node in pipeline
         await next(dataContext, nodeContext);
