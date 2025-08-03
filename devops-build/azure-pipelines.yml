@@ -5,6 +5,7 @@ trigger:
   branches:
     include:
       - dev/*
+      - test/*
       - main
   tags:
     exclude:
@@ -25,7 +26,9 @@ variables:
     value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/r') }}
   - name: isMain
     value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}    
-  
+  - name: isTest
+    value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/heads/test') }}
+
 stages:
  - stage: Build
    jobs:
@@ -40,6 +43,13 @@ stages:
          - template: set-version.yml
          - template: download-ca.yml
          - task: DotNetCoreCLI@2
+           displayName: 'Restore NuGet packages'
+           inputs:
+             command: 'restore'
+             projects: '$(SolutionFile)'
+             restoreArguments: '--force /p:OctoNugetPrivateServer=$(nugetPrivateServer)'
+             noCache: true
+         - task: DotNetCoreCLI@2
            displayName: 'Test'
            inputs:
              command: 'test'
@@ -49,18 +59,18 @@ stages:
              testRunTitle: 'CI'
          - template: build-and-push-docker-image.yml
            parameters:
-             ContainerRegistry: $(DockerRegistryPublicConnection)
+             PublicRegistryServiceConnection: $(DockerRegistryPublicConnection)
              Repository: meshmakers/octo-communication-edge-adapter-demo
              Dockerfile: src/AdapterEdgeDemo/Dockerfile
              Architecture: 'linux/arm64,linux/amd64'
-             PrivateRegistry: $(DockerRegistryPrivateUri)
+             PrivateRegistryName: $(DockerRegistryPrivateUri)
          - template: build-and-push-docker-image.yml
            parameters:
-             ContainerRegistry: $(DockerRegistryPublicConnection)
+             PublicRegistryServiceConnection: $(DockerRegistryPublicConnection)
              Repository: meshmakers/octo-communication-mesh-adapter-demo
              Dockerfile: src/AdapterMeshDemo/Dockerfile
              Architecture: 'linux/arm64,linux/amd64'
-             PrivateRegistry: $(DockerRegistryPrivateUri)             
+             PrivateRegistryName: $(DockerRegistryPrivateUri)
          - template: handle-artifacts.yml
 
      

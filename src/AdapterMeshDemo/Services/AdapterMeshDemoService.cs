@@ -19,7 +19,6 @@ internal class AdapterMeshDemoService(
         {
             var success =await pipelineRegistryService.RegisterPipelinesAsync(adapterStartup.TenantId,
                 adapterStartup.Configuration.Pipelines, errorMessages);
-            await pipelineRegistryService.StartTriggerPipelineNodesAsync(adapterStartup.TenantId);
 
             await eventHubControl.StartAsync(stoppingToken);
             
@@ -37,10 +36,9 @@ internal class AdapterMeshDemoService(
         try
         {
             logger.LogInformation("Shutdown of mesh adapter");
-            await pipelineRegistryService.StopTriggerPipelineNodesAsync(adapterShutdown.TenantId);
-            
-            pipelineRegistryService.UnregisterAllPipelines(adapterShutdown.TenantId);
             await eventHubControl.StopAsync(stoppingToken);
+
+            await pipelineRegistryService.UnregisterAllPipelinesAsync(adapterShutdown.TenantId);
             logger.LogInformation("Mesh Adapter service stopped");
         }
         catch (Exception e)

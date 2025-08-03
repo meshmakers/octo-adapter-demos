@@ -36,9 +36,6 @@ public class AdapterEdgeDemoService(
             // If success is false, at least one pipeline failed to register, and the errorMessages list contains the error messages.
             // The adapter should start to execute the rest of the pipelines.
 
-            // Start triggers. Triggers are special nodes that start the pipeline execution based on some event.
-            await pipelineRegistryService.StartTriggerPipelineNodesAsync(adapterStartup.TenantId);
-            
             // Start connection to rabbitmq event hub
             await eventHubControl.StartAsync(stoppingToken);
 
@@ -57,14 +54,11 @@ public class AdapterEdgeDemoService(
         {
             logger.LogInformation("Shutdown");
 
-            // Stop triggers
-            await pipelineRegistryService.StopTriggerPipelineNodesAsync(adapterShutdown.TenantId);
-
-            // Unregister pipelines
-            pipelineRegistryService.UnregisterAllPipelines(adapterShutdown.TenantId);
-            
             // Stop connection rabbitmq event hub
             await eventHubControl.StopAsync(stoppingToken);
+
+            // Unregister pipelines, this also stops triggers of the pipelines.
+            await pipelineRegistryService.UnregisterAllPipelinesAsync(adapterShutdown.TenantId);
 
             logger.LogInformation("Shutdown complete");
         }
