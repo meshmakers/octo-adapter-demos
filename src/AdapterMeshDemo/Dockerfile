@@ -12,7 +12,7 @@ RUN chmod 644 /usr/local/share/ca-certificates/nugetca.crt && update-ca-certific
 WORKDIR /src
 COPY ["Directory.Build.props", ""]
 COPY ["src/AdapterMeshDemo/AdapterMeshDemo.csproj", "src/AdapterMeshDemo/"]
-RUN dotnet restore "src/AdapterMeshDemo/AdapterMeshDemo.csproj"
+RUN dotnet restore "src/AdapterMeshDemo/AdapterMeshDemo.csproj" -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -p:OctoVersion=${OCTO_VERSION}
 COPY . .
 WORKDIR "/src/src/AdapterMeshDemo"
 RUN dotnet build "AdapterMeshDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -p:OctoVersion=${OCTO_VERSION} -o /app/build

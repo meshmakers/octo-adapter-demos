@@ -12,13 +12,13 @@ RUN chmod 644 /usr/local/share/ca-certificates/nugetca.crt && update-ca-certific
 WORKDIR /src
 COPY ["Directory.Build.props", ""]
 COPY ["src/AdapterEdgeDemo/AdapterEdgeDemo.csproj", "src/AdapterEdgeDemo/"]
-RUN dotnet restore "src/AdapterEdgeDemo/AdapterEdgeDemo.csproj"
+RUN dotnet restore "src/AdapterEdgeDemo/AdapterEdgeDemo.csproj" -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -p:OctoVersion=${OCTO_VERSION}
 COPY . .
 WORKDIR "/src/src/AdapterEdgeDemo"
-RUN dotnet build "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/build
+RUN dotnet build "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -p:OctoVersion=${OCTO_VERSION} -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "AdapterEdgeDemo.csproj" -c Release -p:OctoNugetPrivateServer=${OCTO_PRIVATE_NUGET_SERVICE} -p:OctoVersion=${OCTO_VERSION} -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
