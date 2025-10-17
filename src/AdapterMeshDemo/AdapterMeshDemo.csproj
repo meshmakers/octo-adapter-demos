@@ -16,7 +16,6 @@
     <ItemGroup>
         <PackageReference Include="Meshmakers.Octo.Sdk.Common.Web" Version="$(OctoVersion)"/>
         <PackageReference Include="Meshmakers.Octo.Sdk.MeshAdapter" Version="$(OctoVersion)" />
-        <PackageReference Include="NLog.Extensions.Logging" Version="6.0.4" />
     </ItemGroup>
 
     <ItemGroup>
