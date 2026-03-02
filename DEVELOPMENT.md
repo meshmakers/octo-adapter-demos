@@ -112,6 +112,25 @@ octo-adapter-demos/
 │       ├── Dockerfile
 │       ├── nlog.config
 │       └── Properties/launchSettings.json
+├── tests/
+│   ├── AdapterEdgeDemo.Tests/      # Unit tests for Edge adapter
+│   │   ├── Nodes/
+│   │   │   ├── DemoNodeTests.cs
+│   │   │   └── DemoTriggerNodeTests.cs
+│   │   ├── Services/
+│   │   │   └── AdapterEdgeDemoServiceTests.cs
+│   │   └── DemoPipelineExecutionExceptionTests.cs
+│   ├── AdapterMeshDemo.Tests/      # Unit tests for Mesh adapter
+│   │   ├── Nodes/
+│   │   │   ├── DemoNodeTests.cs
+│   │   │   └── DemoTriggerNodeTests.cs
+│   │   ├── Services/
+│   │   │   └── AdapterMeshDemoServiceTests.cs
+│   │   └── DemoPipelineExecutionExceptionTests.cs
+│   └── AdapterDemos.IntegrationTests/  # Integration tests (TCP)
+│       └── Nodes/
+│           ├── DemoTriggerNodeIntegrationTests.cs
+│           └── MeshDemoTriggerNodeIntegrationTests.cs
 ├── scripts/                        # PowerShell setup/test scripts
 │   ├── om_login_local.ps1          # Login to local OctoMesh instance
 │   ├── om_create_tenants.ps1       # Create test tenant
@@ -127,6 +146,74 @@ octo-adapter-demos/
     ├── set-version.yml
     ├── update-build-number.yml
     └── download-ca.yml
+```
+
+## Testing
+
+### Test Framework
+
+- **Unit Tests**: xUnit 2.9.3 with FakeItEasy 9.0.0 for mocking
+- **Integration Tests**: xUnit with FluentAssertions 8.8.0 for readable assertions
+- **Coverage**: coverlet.collector 6.0.4
+
+### Running Tests
+
+```bash
+# Run all tests
+dotnet test Octo.AdapterDemos.sln -c DebugL
+
+# Run only unit tests (Edge adapter)
+dotnet test tests/AdapterEdgeDemo.Tests/AdapterEdgeDemo.Tests.csproj -c DebugL
+
+# Run only unit tests (Mesh adapter)
+dotnet test tests/AdapterMeshDemo.Tests/AdapterMeshDemo.Tests.csproj -c DebugL
+
+# Run only integration tests
+dotnet test tests/AdapterDemos.IntegrationTests/AdapterDemos.IntegrationTests.csproj -c DebugL
+
+# Run a specific test
+dotnet test --filter "FullyQualifiedName~DemoNodeTests.ProcessObjectAsync_SetsValueByPath" -c DebugL
+```
+
+### Test Structure
+
+**Unit Tests** test individual components in isolation using mocked dependencies:
+- `DemoNodeTests` - verifies pipeline node processes data correctly, calls next delegate
+- `DemoTriggerNodeTests` - verifies trigger node starts/stops TCP listener
+- `AdapterEdgeDemoServiceTests` / `AdapterMeshDemoServiceTests` - verifies adapter lifecycle (startup/shutdown)
+- `DemoPipelineExecutionExceptionTests` - verifies exception factory methods
+
+**Integration Tests** test real TCP communication:
+- `EdgeDemoTriggerNodeIntegrationTests` - starts actual TCP listener, sends messages, verifies responses
+- `MeshDemoTriggerNodeIntegrationTests` - same for Mesh adapter trigger node
+
+### Writing New Tests
+
+When adding new nodes or services, follow these patterns:
+
+```csharp
+// Unit test for a pipeline node
+public class MyNodeTests
+{
+    private readonly IDataContext _dataContext = A.Fake<IDataContext>();
+    private readonly INodeContext _nodeContext = A.Fake<INodeContext>();
+    private readonly NodeDelegate _next = A.Fake<NodeDelegate>();
+
+    [Fact]
+    public async Task ProcessObjectAsync_DoesExpectedWork()
+    {
+        var config = new MyNodeConfiguration { /* ... */ };
+        A.CallTo(() => _nodeContext.GetNodeConfiguration<MyNodeConfiguration>()).Returns(config);
+
+        var sut = new MyNode(_next);
+        await sut.ProcessObjectAsync(_dataContext, _nodeContext);
+
+        // Verify output was written
+        A.CallTo(() => _dataContext.SetValueByPath(/* ... */)).MustHaveHappenedOnceExactly();
+        // Verify pipeline continues
+        A.CallTo(() => _next(_dataContext, _nodeContext)).MustHaveHappenedOnceExactly();
+    }
+}
 ```
 
 ## Developing Custom Nodes
