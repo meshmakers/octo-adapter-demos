@@ -14,20 +14,20 @@ Mesh adapters can be deployed in the cloud and connect directly to the OctoMesh 
 This repository contains a sample MeshAdapter and a sample EdgeAdapter.
 
 Adapters are written in C# and can be run on Windows, Linux, and macOS. The adapters are built using the OctoMesh SDK.
-OctoMesh SDK is a .NET library that provides the necessary interfaces and classes to create adapters for OctoMesh and is available as a NuGet package for .NET Standard 2.0 and .NET 9.0.
+OctoMesh SDK is a .NET library that provides the necessary interfaces and classes to create adapters for OctoMesh and is available as a NuGet package for .NET 10.0.
 
-Edge adapters may target .NET 9 or .NET Framework 4.8. Mesh adapters must target .NET 9.
+Edge adapters may target .NET 10 or .NET Framework 4.8. Mesh adapters must target .NET 10.
 
 ## Plug or Socket?
 Adapters may be of type Plug or Socket, or both.
 A Socket adapter is a passive adapter that listens for incoming connections,
 while a Plug adapter is an active adapter that connects to a remote endpoint.
 
-## AdapterEgeDemo
-The demo adapter contains the following components:
+## AdapterEdgeDemo
+The Edge demo adapter is an active (Plug) adapter that connects to an OctoMesh instance via the DistributionEventHub. It contains the following components:
 
 - DemoNode: A simple node that writes the defined message in node configuration to pipeline.
-- DemoTriggerNode: A simple trigger node that triggers the pipeline when a TCP message is received at configured port
+- DemoTriggerNode: A simple trigger node that triggers the pipeline when a TCP message is received at configured port.
 - Scripts to deploy the adapter to OctoMesh.
 
 ### Setup
@@ -48,6 +48,9 @@ The demo adapter contains the following components:
   You should find the adapter configuration in the Admin Panel under the `Communication/Adapters` section.
 
 * Build the adapter
+    ```bash
+    dotnet build Octo.AdapterDemos.sln -c DebugL
+    ```
 
 * Set environment variables of the IDE to prepare for running the adapter.
   ```bash
@@ -74,7 +77,7 @@ The demo adapter contains the following components:
 * Deploy the pipeline to the adapter using AdminPanel.
 * Send a TCP message to the trigger node port to trigger the pipeline. Use this script to send a message to the trigger node:
   ```bash
-  ./scripts/om_send_tcp_message.ps1 -port 8001
+  ./scripts/om_send_tcp_message.ps1 -port 8000
   ```
 
 ### Uninstall
@@ -85,6 +88,43 @@ The demo adapter contains the following components:
     ```bash
     ./scripts/om_delete_tenants.ps1
     ```
+
+## AdapterMeshDemo
+The Mesh demo adapter is a passive (Socket) adapter that connects directly to OctoMesh repositories. It runs as a web host and provides higher bandwidth and lower latency compared to Edge adapters. It contains the following components:
+
+- DemoNode: A simple node that writes the defined message in node configuration to pipeline.
+- DemoTriggerNode: A simple trigger node that triggers the pipeline when a TCP message is received at configured port.
+
+### Setup
+
+* Complete the general setup steps described in the [AdapterEdgeDemo](#adapteredgedemo) section (OctoMesh instance, tenant, adapter configuration).
+
+* Build the adapter
+    ```bash
+    dotnet build Octo.AdapterDemos.sln -c DebugL
+    ```
+
+* Set environment variables of the IDE to prepare for running the adapter.
+  ```bash
+  OCTO_ADAPTER__TENANTID=meshtest
+  OCTO_ADAPTER__ADAPTERRTID=6760711ec4ff02221e0b532e
+  OCTO_ADAPTER__ADAPTERCKTYPEID=System.Communication/MeshAdapter
+  OCTO_SYSTEM__AdminUserPassword=OctoAdmin1
+  OCTO_SYSTEM__DatabaseUserPassword=OctoUser1
+  OCTO_SYSTEM__UseDirectConnection=true
+  ```
+  The Mesh adapter requires additional system configuration (database credentials, direct connection mode) since it connects directly to the OctoMesh repositories.
+
+* Run the adapter
+
+* The adapter should be shown in Admin Panel with communication state `ONLINE`.
+
+* Create and deploy a pipeline using the same node configuration as described in the Edge adapter section.
+
+* Send a TCP message to the trigger node port:
+  ```bash
+  ./scripts/om_send_tcp_message.ps1 -port 8000
+  ```
 
 ## Further reading
 * [Write your first Edge Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createEdgeAdapter)
