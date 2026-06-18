@@ -32,12 +32,12 @@ public class DemoNodeTests
         await _sut.ProcessObjectAsync(_dataContext, _nodeContext);
 
         // Assert
-        A.CallTo(() => _dataContext.SetValueByPath(
+        A.CallTo(() => _dataContext.Set(
             config.TargetPath,
+            "Test Message",
             config.DocumentMode,
             config.TargetValueKind,
-            config.TargetValueWriteMode,
-            "Test Message")).MustHaveHappenedOnceExactly();
+            config.TargetValueWriteMode)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -81,11 +81,11 @@ public class DemoNodeTests
         await _sut.ProcessObjectAsync(_dataContext, _nodeContext);
 
         // Assert
-        A.CallTo(() => _dataContext.SetValueByPath(
+        A.CallTo(() => _dataContext.Set(
             config.TargetPath,
+            "Hello, World!",
             config.DocumentMode,
             config.TargetValueKind,
-            config.TargetValueWriteMode,
-            "Hello, World!")).MustHaveHappenedOnceExactly();
+            config.TargetValueWriteMode)).MustHaveHappenedOnceExactly();
     }
 }

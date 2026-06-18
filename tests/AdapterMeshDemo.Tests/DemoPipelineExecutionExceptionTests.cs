@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace Meshmakers.Octo.Communication.MeshAdapter.Demo.Tests;
@@ -36,10 +36,10 @@ public class DemoPipelineExecutionExceptionTests
     }
 
     [Fact]
-    public void MessageDeserializationFailed_ReturnsExceptionWithJsonReaderException()
+    public void MessageDeserializationFailed_ReturnsExceptionWithJsonException()
     {
         // Arrange
-        var jsonEx = new JsonReaderException("bad json");
+        var jsonEx = new JsonException("bad json");
 
         // Act
         var result = DemoPipelineExecutionException.MessageDeserializationFailed(jsonEx);

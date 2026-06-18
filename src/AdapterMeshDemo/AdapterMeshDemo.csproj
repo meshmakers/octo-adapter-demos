@@ -18,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Meshmakers.Octo.Sdk.Common.Web" Version="$(OctoVersion)"/>
-        <PackageReference Include="Meshmakers.Octo.Sdk.MeshAdapter" Version="$(OctoVersion)" />
+        <PackageReference Include="Meshmakers.Octo.Sdk.Common.Web" Version="$(OctoCommVersion)"/>
+        <PackageReference Include="Meshmakers.Octo.Sdk.MeshAdapter" Version="$(OctoCommVersion)" />
     </ItemGroup>
 
     <ItemGroup>

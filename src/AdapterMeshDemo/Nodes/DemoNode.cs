@@ -38,8 +38,7 @@ public class DemoNode(
         nodeContext.Info("DemoNode: " + c.MyMessage);
 
         // set value
-        dataContext.SetValueByPath(c.TargetPath, c.DocumentMode, c.TargetValueKind, c.TargetValueWriteMode,
-            c.MyMessage);
+        dataContext.Set(c.TargetPath, c.MyMessage, c.DocumentMode, c.TargetValueKind, c.TargetValueWriteMode);
 
         // Continue with next node in pipeline
         await next(dataContext, nodeContext);
