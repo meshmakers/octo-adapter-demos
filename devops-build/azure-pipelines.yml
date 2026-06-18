@@ -1,4 +1,23 @@
+# Root-level CI pipeline for octo-adapter-demos, using shared templates from
+# octo-pipeline-templates@tpl-v0.4.6.
+#
+# Phase-3.5 CI migration (2026-06-18): pre-req for joining hotfix-service.yml.
+# The Directory.Build.props + csproj OctoCoreLibVersion / OctoCommVersion split
+# already landed in AB#4166 (commit 1840571); without the shared
+# update-build-number.yml exporting those two vars on r-tag builds, the
+# Directory.Build.props release-fallback would resolve them to 0.1.* and the
+# restore would pull slim main-branch packages from the private feed instead
+# of the tagged release versions from public.
+
 name: $(MajorVersion).$(MinorVersion).$(date:yyMM).$(DayOfMonth)$(rev:rrr)-$(Build.SourceBranchName)
+
+resources:
+  repositories:
+    - repository: pipelineTemplates
+      type: github
+      name: meshmakers/octo-pipeline-templates
+      endpoint: meshmakers-access-token
+      ref: refs/tags/tpl-v0.4.6
 
 trigger:
   batch: true
@@ -25,54 +44,51 @@ variables:
   - name: isRelease
     value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/r') }}
   - name: isMain
-    value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}    
+    value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
   - name: isTest
     value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/heads/test') }}
 
 stages:
- - stage: Build
-   jobs:
-     - job: local_build
-       displayName: "Build nuget and execute tests"
-       pool:
-         name: meshmakers-ci-agents
-       steps:
-         - template: update-build-number.yml
-         - checkout: self
-           clean: true
-         - template: set-version.yml
-         - template: download-ca.yml
-         - task: DotNetCoreCLI@2
-           displayName: 'Restore NuGet packages'
-           inputs:
-             command: 'restore'
-             projects: '$(SolutionFile)'
-             restoreArguments: '--force /p:OctoNugetPrivateServer=$(nugetPrivateServer)'
-             noCache: true
-         - task: DotNetCoreCLI@2
-           displayName: 'Test'
-           inputs:
-             command: 'test'
-             arguments: '--configuration $(buildConfiguration) -p:OctoNugetPrivateServer=$(nugetPrivateServer)'
-             projects: |
-               **/*Tests.csproj
-               !**/*SystemTests.csproj
-             testRunTitle: 'CI'
-         - template: build-and-push-docker-image.yml
-           parameters:
-             PublicRegistryServiceConnection: $(DockerRegistryPublicConnection)
-             Repository: meshmakers/octo-communication-edge-adapter-demo
-             Dockerfile: src/AdapterEdgeDemo/Dockerfile
-             Architecture: 'linux/arm64,linux/amd64'
-             PrivateRegistryName: $(DockerRegistryPrivateUri)
-         - template: build-and-push-docker-image.yml
-           parameters:
-             PublicRegistryServiceConnection: $(DockerRegistryPublicConnection)
-             Repository: meshmakers/octo-communication-mesh-adapter-demo
-             Dockerfile: src/AdapterMeshDemo/Dockerfile
-             Architecture: 'linux/arm64,linux/amd64'
-             PrivateRegistryName: $(DockerRegistryPrivateUri)
-         - template: handle-artifacts.yml
-
-     
-
+  - stage: Build
+    jobs:
+      - job: local_build
+        displayName: 'Build nuget and execute tests'
+        pool:
+          name: meshmakers-ci-agents
+        steps:
+          - template: templates/steps/update-build-number.yml@pipelineTemplates
+          - checkout: self
+            clean: true
+          - template: templates/steps/set-version.yml@pipelineTemplates
+          - template: templates/steps/download-ca.yml@pipelineTemplates
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore NuGet packages'
+            inputs:
+              command: 'restore'
+              projects: '$(SolutionFile)'
+              restoreArguments: '--force /p:OctoNugetPrivateServer=$(nugetPrivateServer)'
+              noCache: true
+          - task: DotNetCoreCLI@2
+            displayName: 'Test'
+            inputs:
+              command: 'test'
+              arguments: '--configuration $(buildConfiguration) -p:OctoNugetPrivateServer=$(nugetPrivateServer)'
+              projects: |
+                **/*Tests.csproj
+                !**/*SystemTests.csproj
+              testRunTitle: 'CI'
+          - template: templates/steps/build-and-push-docker.yml@pipelineTemplates
+            parameters:
+              publicRegistryServiceConnection: $(DockerRegistryPublicConnection)
+              repository: meshmakers/octo-communication-edge-adapter-demo
+              dockerfile: src/AdapterEdgeDemo/Dockerfile
+              privateRegistryName: $(DockerRegistryPrivateUri)
+              platforms: 'linux/arm64,linux/amd64'
+          - template: templates/steps/build-and-push-docker.yml@pipelineTemplates
+            parameters:
+              publicRegistryServiceConnection: $(DockerRegistryPublicConnection)
+              repository: meshmakers/octo-communication-mesh-adapter-demo
+              dockerfile: src/AdapterMeshDemo/Dockerfile
+              privateRegistryName: $(DockerRegistryPrivateUri)
+              platforms: 'linux/arm64,linux/amd64'
+          - template: templates/steps/handle-artifacts.yml@pipelineTemplates
