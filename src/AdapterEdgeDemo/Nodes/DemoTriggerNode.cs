@@ -107,7 +107,7 @@ public class DemoTriggerNode( /* you can inject services here */) : ITriggerPipe
                 context.NodeContext.Info($"Received message: {message}");
 
                 // Parse the incoming message as JSON and start the pipeline execution with the message as input
-                var input = JsonNode.Parse(message);
+                var input = JsonNode.Parse(message) ?? throw new JsonException("Payload parsed to null");
                 var output = await context.ExecuteAsync(
                     new ExecutePipelineOptions(DateTime.UtcNow)
                     {
