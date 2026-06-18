@@ -4,8 +4,8 @@ using System.Text;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline;
 using Meshmakers.Octo.Sdk.Common.EtlDataPipeline.Configuration;
 using Meshmakers.Octo.Sdk.Common.Services;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Meshmakers.Octo.Communication.EdgeAdapter.Demo.Nodes;
 
@@ -107,7 +107,7 @@ public class DemoTriggerNode( /* you can inject services here */) : ITriggerPipe
                 context.NodeContext.Info($"Received message: {message}");
 
                 // Parse the incoming message as JSON and start the pipeline execution with the message as input
-                var input = JToken.Parse(message);
+                var input = JsonNode.Parse(message) ?? throw new JsonException("Payload parsed to null");
                 var output = await context.ExecuteAsync(
                     new ExecutePipelineOptions(DateTime.UtcNow)
                     {
@@ -116,7 +116,7 @@ public class DemoTriggerNode( /* you can inject services here */) : ITriggerPipe
                     input);
 
                 // Serialize the output as JSON and send it back to the client
-                var outputString = JsonConvert.SerializeObject(output);
+                var outputString = JsonSerializer.Serialize(output);
                 byte[] utf8Bytes = Encoding.UTF8.GetBytes(outputString + Environment.NewLine);
                 await networkStream.WriteAsync(utf8Bytes, cancellationToken);
                 await networkStream.FlushAsync(cancellationToken);
@@ -124,7 +124,7 @@ public class DemoTriggerNode( /* you can inject services here */) : ITriggerPipe
                 messageBuilder.Clear();
             }
         }
-        catch (JsonReaderException ex)
+        catch (JsonException ex)
         {
             context.NodeContext.Error($"Error parsing input: {ex.Message}");
             throw DemoPipelineExecutionException.MessageDeserializationFailed(ex);
