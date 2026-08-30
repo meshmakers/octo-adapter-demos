@@ -1,5 +1,5 @@
 # Root-level CI pipeline for octo-adapter-demos, using shared templates from
-# octo-pipeline-templates@tpl-v0.4.6.
+# octo-pipeline-templates@tpl-v0.4.11.
 #
 # Phase-3.5 CI migration (2026-06-18): pre-req for joining hotfix-service.yml.
 # The Directory.Build.props + csproj OctoCoreLibVersion / OctoCommVersion split
@@ -11,13 +11,27 @@
 
 name: $(MajorVersion).$(MinorVersion).$(date:yyMM).$(DayOfMonth)$(rev:rrr)-$(Build.SourceBranchName)
 
+parameters:
+  # Injected by hotfix-service.yml on r-tag builds so the whole chain pins the
+  # scheduler-determined lib/comm release version (forwarded to
+  # update-build-number.yml). Empty on normal branch CI / manual runs — there
+  # the Directory.Build.props pin / floating range applies as before. The
+  # 'auto' sentinel (stripped to '' on the forward) keeps the field optional in
+  # the "Run pipeline" UI; an empty-string default would render as required.
+  - name: octoCoreLibVersion
+    type: string
+    default: 'auto'
+  - name: octoCommVersion
+    type: string
+    default: 'auto'
+
 resources:
   repositories:
     - repository: pipelineTemplates
       type: github
       name: meshmakers/octo-pipeline-templates
       endpoint: meshmakers-access-token
-      ref: refs/tags/tpl-v0.4.6
+      ref: refs/tags/tpl-v0.4.11
 
 trigger:
   batch: true
@@ -57,6 +71,9 @@ stages:
           name: meshmakers-ci-agents
         steps:
           - template: templates/steps/update-build-number.yml@pipelineTemplates
+            parameters:
+              octoCoreLibVersionOverride: ${{ replace(parameters.octoCoreLibVersion, 'auto', '') }}
+              octoCommVersionOverride: ${{ replace(parameters.octoCommVersion, 'auto', '') }}
           - checkout: self
             clean: true
           - template: templates/steps/set-version.yml@pipelineTemplates
