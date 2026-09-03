@@ -1,0 +1,28 @@
+# Dependabot keeps the NuGet packages and the base image tags in the two Dockerfiles current.
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/src/AdapterEdgeDemo"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # A new .NET major is a platform decision, not a Dependabot bump.
+      - dependency-name: "mcr.microsoft.com/dotnet/sdk"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "mcr.microsoft.com/dotnet/runtime"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "docker"
+    directory: "/src/AdapterMeshDemo"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "mcr.microsoft.com/dotnet/sdk"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "mcr.microsoft.com/dotnet/runtime"
+        update-types: ["version-update:semver-major"]

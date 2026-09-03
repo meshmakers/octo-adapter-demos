@@ -29,7 +29,7 @@ public class EdgeDemoTriggerNodeIntegrationTests : IAsyncLifetime
         _sut = new DemoTriggerNode();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         _actualPort = GetFreePort();
         var config = new DemoTriggerNodeConfiguration { Port = (ushort)_actualPort };
@@ -46,7 +46,7 @@ public class EdgeDemoTriggerNodeIntegrationTests : IAsyncLifetime
         await Task.Delay(200);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _sut.StopAsync(_triggerContext);
     }
@@ -70,7 +70,7 @@ public class EdgeDemoTriggerNodeIntegrationTests : IAsyncLifetime
         await SendTcpMessageAsync("{\"sensor\": \"temp\"}");
 
         // Allow async processing to complete
-        await Task.Delay(100);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
 
         // Assert
         A.CallTo(() => _triggerContext.ExecuteAsync(

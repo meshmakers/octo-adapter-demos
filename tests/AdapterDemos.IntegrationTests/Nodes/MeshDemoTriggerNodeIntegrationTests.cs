@@ -29,7 +29,7 @@ public class MeshDemoTriggerNodeIntegrationTests : IAsyncLifetime
         _sut = new DemoTriggerNode();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         _actualPort = GetFreePort();
         var config = new DemoTriggerNodeConfiguration { Port = (ushort)_actualPort };
@@ -44,7 +44,7 @@ public class MeshDemoTriggerNodeIntegrationTests : IAsyncLifetime
         await Task.Delay(200);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _sut.StopAsync(_triggerContext);
     }
@@ -70,7 +70,7 @@ public class MeshDemoTriggerNodeIntegrationTests : IAsyncLifetime
 
         // Act
         await SendTcpMessageAsync("{\"data\": true}");
-        await Task.Delay(100);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
 
         var after = DateTime.UtcNow;
 

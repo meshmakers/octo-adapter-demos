@@ -152,9 +152,9 @@ octo-adapter-demos/
 
 ### Test Framework
 
-- **Unit Tests**: xUnit 2.9.3 with FakeItEasy 9.0.0 for mocking
-- **Integration Tests**: xUnit with FluentAssertions 8.8.0 for readable assertions
-- **Coverage**: coverlet.collector 6.0.4
+- **Unit Tests**: xUnit v3 (`xunit.v3.mtp-off` 4.0.0) with FakeItEasy 9.0.1 for mocking
+- **Integration Tests**: xUnit v3 with FluentAssertions 8.10.0 for readable assertions
+- **Coverage**: coverlet.collector 10.0.1
 
 ### Running Tests
 
