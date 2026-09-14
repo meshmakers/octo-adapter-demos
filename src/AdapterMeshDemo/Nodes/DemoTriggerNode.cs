@@ -13,6 +13,9 @@ namespace Meshmakers.Octo.Communication.MeshAdapter.Demo.Nodes;
 /// Configuration for DemoTriggerNode - a trigger node starts the execution of the transformation pipeline
 /// </summary>
 [NodeName("DemoTrigger", 1)]
+// AB#5228: listens on a TCP socket the process itself opens — nothing external wakes a
+// hibernated workload, the connection is simply refused (AB#4914).
+[NodeRequiresRunningProcess]
 // ReSharper disable once ClassNeverInstantiated.Global
 public record DemoTriggerNodeConfiguration : TriggerNodeConfiguration
 {
