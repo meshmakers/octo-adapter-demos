@@ -55,8 +55,8 @@
 | Configuration | Purpose | NuGet Source | OctoVersion |
 |---|---|---|---|
 | `DebugL` | Local development | `../nuget/` (local packages) | `999.0.0` |
-| `Debug` | Standard debug | nuget.org | `3.3.*` |
-| `Release` | Production build | nuget.org or private server | `3.3.*` / `0.1.*` |
+| `Debug` | Standard debug | nuget.org | `-p:OctoVersion=X.Y.Z` (no fallback, AB#6297; `OCTO0001` without it) |
+| `Release` | Production build | nuget.org or private server | pipeline version / `0.1.*` |
 
 ### Build Commands
 

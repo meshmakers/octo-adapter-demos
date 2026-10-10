@@ -32,7 +32,7 @@ dotnet test Octo.AdapterDemos.sln -c DebugL
 ## Configuration
 - Build configurations: `Debug`, `Release`, `DebugL` (local NuGet at `../nuget/`)
 - Target framework: `net10.0`
-- NuGet version strategy: `999.0.0` (DebugL), `0.1.*` (private server), `3.3.*` (public)
+- NuGet version strategy: `999.0.0` (DebugL), `0.1.*` (private server); otherwise only from the pipeline (AB#6297) — pass `-p:OctoVersion=X.Y.Z` for a standalone Release build, or it fails fast with `OCTO0001`
 - Environment variables: `OCTO_ADAPTER__TENANTID`, `OCTO_ADAPTER__ADAPTERRTID`
 
 ## Conventions

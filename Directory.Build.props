@@ -21,15 +21,23 @@
         <PackageTags>Octo data mesh iot</PackageTags>
         <TargetFramework>net10.0</TargetFramework>
         <UserSecretsId>04bcde24-0d21-4346-8459-3bca58abec33</UserSecretsId>
+        <!-- OctoVersion is the version range of the upstream Octo packages. It comes ONLY from
+             the pipeline (AB#6291, AB#6297): update-build-number.yml sets 0.1.* on main, X.Y.* on
+             test/X.Y-* and the exact X.Y.Z on r-tags; the release trains and hotfix-service.yml
+             also pass octoCoreLibVersion / octoCommVersion. DebugL pins 999.0.0 (local chain from
+             ../nuget), and a build against the private feed defaults to the main line 0.1.*.
+             There is deliberately NO release-line fallback here: a build without any of these
+             fails fast in the OctoVerifyVersionIsSet target below, and the release trains fail if
+             a release version is pinned here again (verify-release-version-drift.ps1). -->
         <OctoVersion Condition="'$(Configuration)'=='DebugL'">999.0.0</OctoVersion>
         <OctoVersion Condition="'$(OctoNugetPrivateServer)'!='' And '$(OctoVersion)'==''">0.1.*</OctoVersion>
-        <OctoVersion Condition="'$(OctoNugetPrivateServer)'=='' And '$(OctoVersion)'==''">3.4.*</OctoVersion>
         <OctoCoreLibVersion Condition="'$(Configuration)'=='DebugL'">999.0.0</OctoCoreLibVersion>
         <OctoCoreLibVersion Condition="'$(OctoNugetPrivateServer)'!='' And '$(OctoCoreLibVersion)'==''">0.1.*</OctoCoreLibVersion>
-        <OctoCoreLibVersion Condition="'$(OctoNugetPrivateServer)'=='' And '$(OctoCoreLibVersion)'==''">3.4.*</OctoCoreLibVersion>
+        <!-- No pipeline override (standalone build): follow OctoVersion; no release version is pinned here (AB#6297). -->
+        <OctoCoreLibVersion Condition="'$(OctoCoreLibVersion)'==''">$(OctoVersion)</OctoCoreLibVersion>
         <OctoCommVersion Condition="'$(Configuration)'=='DebugL'">999.0.0</OctoCommVersion>
         <OctoCommVersion Condition="'$(OctoNugetPrivateServer)'!='' And '$(OctoCommVersion)'==''">0.1.*</OctoCommVersion>
-        <OctoCommVersion Condition="'$(OctoNugetPrivateServer)'=='' And '$(OctoCommVersion)'==''">3.4.*</OctoCommVersion>
+        <OctoCommVersion Condition="'$(OctoCommVersion)'==''">$(OctoVersion)</OctoCommVersion>
         <Version Condition="'$(Configuration)'=='DebugL'">999.0.0</Version>
         <RestoreSources Condition="'$(OctoNugetPrivateServer)'!=''">$(OctoNugetPrivateServer)</RestoreSources>
         <RestoreSources Condition="'$(Configuration)'=='DebugL'">$(RestoreSources);$(OctoRepoRootPath)../nuget</RestoreSources>
@@ -47,4 +55,16 @@
         <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-gwg2-r3hj-4w44" />
         <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-wmxv-xphr-5c9g" />
     </ItemGroup>
+    <!-- Fail fast (AB#6291, AB#6297): without a pipeline version, DebugL or a private feed
+         OctoVersion stays empty, and every upstream Octo PackageReference would end in a cryptic
+         NU1015 / NU1102 restore error. Hooked into the restore graph walk
+         (_IsProjectRestoreSupported, CollectPackageReferences) and into the build
+         (_CheckForInvalidConfigurationAndPlatform), so both `dotnet restore` and `dotnet build`
+         stop before any package is resolved. -->
+    <Target Name="OctoVerifyVersionIsSet"
+            BeforeTargets="_IsProjectRestoreSupported;CollectPackageReferences;_CheckForInvalidConfigurationAndPlatform"
+            Condition="'$(OctoVersion)'==''">
+        <Error Code="OCTO0001"
+               Text="OctoVersion is not set for configuration '$(Configuration)'. Octo lib versions come only from the pipeline (AB#6291); there is no hard-coded release fallback in Directory.Build.props. For local work build with -c DebugL (999.0.0 from ../nuget). For a standalone build pass -p:OctoVersion=X.Y.Z (or X.Y.*), or -p:OctoNugetPrivateServer=&lt;feed&gt; for the main line 0.1.*." />
+    </Target>
 </Project>
