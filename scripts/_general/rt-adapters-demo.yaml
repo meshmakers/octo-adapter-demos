@@ -3,12 +3,12 @@ dependencies:
   - System.Communication
 entities:
   - rtId: 6760711ec4ff02221e0b532d
-    ckTypeId: System.Communication/EdgeAdapter
+    ckTypeId: System.Communication/Adapter
     attributes:
       - id: System/Name
         value: Demo Edge Adapter
   - rtId: 6760711ec4ff02221e0b532e
-    ckTypeId: System.Communication/MeshAdapter
+    ckTypeId: System.Communication/Adapter
     attributes:
       - id: System/Name
         value: Demo Mesh Adapter
