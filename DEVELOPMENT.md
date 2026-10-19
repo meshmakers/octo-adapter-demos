@@ -293,7 +293,7 @@ public class MyTriggerNode : ITriggerPipelineNode
 
 ### Pipeline YAML Configuration
 
-Pipelines are configured in YAML and deployed via the AdminPanel:
+Pipelines are configured in YAML and deployed via Refinery Studio (`Communication > Data Flows`):
 
 ```yaml
 triggers:
@@ -333,7 +333,7 @@ transformations:
 ### Mesh Adapter (additional)
 | Variable | Description | Example |
 |---|---|---|
-| `OCTO_ADAPTER__ADAPTERCKTYPEID` | CK type of the adapter | `System.Communication/MeshAdapter` |
+| `OCTO_ADAPTER__ADAPTERCKTYPEID` | CK type of the adapter | `System.Communication/Adapter` |
 | `OCTO_SYSTEM__AdminUserPassword` | Admin password for direct DB access | `OctoAdmin1` |
 | `OCTO_SYSTEM__DatabaseUserPassword` | Database user password | `OctoUser1` |
 | `OCTO_SYSTEM__UseDirectConnection` | Use direct MongoDB connection | `true` |

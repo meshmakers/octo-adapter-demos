@@ -31,7 +31,7 @@ public class AdapterMeshDemoServiceTests
     {
         // Arrange
         var pipelines = new List<PipelineConfigurationDto>();
-        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/MeshAdapter@6760711ec4ff02221e0b532e"), null, pipelines);
+        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/Adapter@6760711ec4ff02221e0b532e"), null, pipelines);
         var startup = new AdapterStartup { TenantId = "test-tenant", Configuration = config };
         var errorMessages = new List<DeploymentUpdateErrorMessageDto>();
         A.CallTo(() => _pipelineRegistryService.RegisterPipelinesAsync(
@@ -52,7 +52,7 @@ public class AdapterMeshDemoServiceTests
     {
         // Arrange
         var pipelines = new List<PipelineConfigurationDto>();
-        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/MeshAdapter@6760711ec4ff02221e0b532e"), null, pipelines);
+        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/Adapter@6760711ec4ff02221e0b532e"), null, pipelines);
         var startup = new AdapterStartup { TenantId = "test-tenant", Configuration = config };
         var errorMessages = new List<DeploymentUpdateErrorMessageDto>();
         A.CallTo(() => _pipelineRegistryService.RegisterPipelinesAsync(
@@ -85,7 +85,7 @@ public class AdapterMeshDemoServiceTests
     {
         // Arrange
         var pipelines = new List<PipelineConfigurationDto>();
-        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/MeshAdapter@6760711ec4ff02221e0b532e"), null, pipelines);
+        var config = new AdapterConfigurationDto(new RtEntityId("System.Communication/Adapter@6760711ec4ff02221e0b532e"), null, pipelines);
         var startup = new AdapterStartup { TenantId = "test-tenant", Configuration = config };
         var errorMessages = new List<DeploymentUpdateErrorMessageDto>();
         A.CallTo(() => _pipelineRegistryService.RegisterPipelinesAsync(

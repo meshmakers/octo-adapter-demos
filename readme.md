@@ -11,7 +11,8 @@ Edge adapters are designed to run (optionally) on the edge, while Mesh adapters 
 The big difference is that Edge adapters can be deployed on devices with limited resources and communicate with the OctoMesh repositories through a MeshAdapter using the OctoMesh DistributionEventHub.
 Mesh adapters can be deployed in the cloud and connect directly to the OctoMesh repositories with higher bandwidth and lower latency.
 
-This repository contains a sample MeshAdapter and a sample EdgeAdapter.
+This repository contains a sample Mesh adapter and a sample Edge adapter.
+Both are configured in a tenant as an entity of the CK type `System.Communication/Adapter`; whether an adapter runs as Edge or Mesh adapter is decided by the code that hosts it (`AdapterBuilder` vs. `WebAdapterBuilder`), not by the CK type.
 
 Adapters are written in C# and can be run on Windows, Linux, and macOS. The adapters are built using the OctoMesh SDK.
 OctoMesh SDK is a .NET library that provides the necessary interfaces and classes to create adapters for OctoMesh and is available as a NuGet package for .NET 10.0.
@@ -45,7 +46,7 @@ The Edge demo adapter is an active (Plug) adapter that connects to an OctoMesh i
     ```bash
     ./scripts/om_importrt_sample_general.ps1
     ```
-  You should find the adapter configuration in the Admin Panel under the `Communication/Adapters` section.
+  The script enables communication for the tenant (`EnableCommunication`) and imports two adapter entities of CK type `System.Communication/Adapter`. You should find them in Refinery Studio under `Communication > Adapters` (`/<tenantId>/communication/adapters`).
 
 * Build the adapter
     ```bash
@@ -61,7 +62,7 @@ The Edge demo adapter is an active (Plug) adapter that connects to an OctoMesh i
 
 * Run the adapter
 
-* The adapter should be shown in Admin Panel with communication state `ONLINE`.
+* In Refinery Studio, open `Communication > Adapters` of the tenant `meshtest`: the adapter `Demo Edge Adapter` should show the communication state `Online`.
 
 * Create a pipeline with the adapter nodes. This sample pipeline configuration demonstrates how to use the adapter nodes:
   ```yaml
@@ -74,7 +75,7 @@ The Edge demo adapter is an active (Plug) adapter that connects to an OctoMesh i
       myMessage: Hello, Mars!
   ```
 
-* Deploy the pipeline to the adapter using AdminPanel.
+* Create the pipeline in Refinery Studio under `Communication > Data Flows`, assign it to the adapter and deploy it.
 * Send a TCP message to the trigger node port to trigger the pipeline. Use this script to send a message to the trigger node:
   ```bash
   ./scripts/om_send_tcp_message.ps1 -port 8000
@@ -108,7 +109,7 @@ The Mesh demo adapter is a passive (Socket) adapter that connects directly to Oc
   ```bash
   OCTO_ADAPTER__TENANTID=meshtest
   OCTO_ADAPTER__ADAPTERRTID=6760711ec4ff02221e0b532e
-  OCTO_ADAPTER__ADAPTERCKTYPEID=System.Communication/MeshAdapter
+  OCTO_ADAPTER__ADAPTERCKTYPEID=System.Communication/Adapter
   OCTO_SYSTEM__AdminUserPassword=OctoAdmin1
   OCTO_SYSTEM__DatabaseUserPassword=OctoUser1
   OCTO_SYSTEM__UseDirectConnection=true
@@ -117,7 +118,7 @@ The Mesh demo adapter is a passive (Socket) adapter that connects directly to Oc
 
 * Run the adapter
 
-* The adapter should be shown in Admin Panel with communication state `ONLINE`.
+* In Refinery Studio, open `Communication > Adapters` of the tenant `meshtest`: the adapter `Demo Mesh Adapter` should show the communication state `Online`.
 
 * Create and deploy a pipeline using the same node configuration as described in the Edge adapter section.
 
@@ -125,6 +126,15 @@ The Mesh demo adapter is a passive (Socket) adapter that connects directly to Oc
   ```bash
   ./scripts/om_send_tcp_message.ps1 -port 8000
   ```
+
+## Deployed adapters
+The steps above run a demo adapter from your IDE against a local OctoMesh instance. In a deployed environment, adapters are rolled out by the Communication Operator (Helm); there is no `dotnet run` involved.
+
+* **Mesh adapter of the tenant (`octo-mesh-adapter` chart).** The local [getting-started](https://github.com/meshmakers/getting-started) stack (kind cluster, OctoMesh 3.5.x) installs the platform; its `scripts/om-bootstrap-tenant.ps1` creates the tenant, enables communication (this seeds the default deployment site and the mesh adapter workload) and deploys both through the operator. The script can be re-run.
+* **In Refinery Studio** (`/<tenantId>/communication/...`): `Deployment sites` lists the sites (pools) the operator manages, `Adapters` the adapter entities with their communication state (`Online`), `Data Flows` the pipelines.
+* A deployed adapter is started from Studio (`Adapters`) or with `octo-cli -c DeployWorkload -id <adapterRtId>`, after the deployment site was deployed (`octo-cli -c DeployDeploymentSite -id <siteRtId>`). Packaging your own adapter as a chart for the operator is not described in this repository.
+
+The IDE steps in this README expect the dev-stack service URLs of `scripts/om_login_local.ps1` (`https://localhost:5001/`, `:5003`, `:5009`, `:5015`, started with `Start-Octo`). This README covers the IDE route only for the dev stack; against the getting-started stack the adapters are deployed by the operator instead (see above).
 
 ## Further reading
 * [Write your first Edge Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createEdgeAdapter)
