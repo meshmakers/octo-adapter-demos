@@ -128,7 +128,13 @@ The Mesh demo adapter is a passive (Socket) adapter that connects directly to Oc
   ```
 
 ## Deployed adapters
-The steps above run an adapter from your IDE against a local OctoMesh instance. In a deployed environment, adapters are rolled out by the Communication Operator (Helm), see the OctoMesh documentation.
+The steps above run a demo adapter from your IDE against a local OctoMesh instance. In a deployed environment, adapters are rolled out by the Communication Operator (Helm); there is no `dotnet run` involved.
+
+* **Mesh adapter of the tenant (`octo-mesh-adapter` chart).** The local [getting-started](https://github.com/meshmakers/getting-started) stack (kind cluster, OctoMesh 3.5.x) installs the platform; its `scripts/om-bootstrap-tenant.ps1` creates the tenant, enables communication (this seeds the default deployment site and the mesh adapter workload) and deploys both through the operator. The script can be re-run.
+* **In Refinery Studio** (`/<tenantId>/communication/...`): `Deployment sites` lists the sites (pools) the operator manages, `Adapters` the adapter entities with their communication state (`Online`), `Data Flows` the pipelines.
+* A deployed adapter is started from Studio (`Adapters`) or with `octo-cli -c DeployWorkload -id <adapterRtId>`, after the deployment site was deployed (`octo-cli -c DeployDeploymentSite -id <siteRtId>`). Packaging your own adapter as a chart for the operator is not described in this repository.
+
+The IDE steps in this README expect the dev-stack service URLs of `scripts/om_login_local.ps1` (`https://localhost:5001/`, `:5003`, `:5009`, `:5015`, started with `Start-Octo`). Running the IDE adapters against the getting-started stack needs its URLs (`*.127-0-0-1.nip.io`) instead; that route is not covered here yet.
 
 ## Further reading
 * [Write your first Edge Adapter](https://docs.meshmakers.cloud/docs/developerGuide/Sdk/adapters/createEdgeAdapter)
